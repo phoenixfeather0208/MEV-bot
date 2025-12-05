@@ -1,12 +1,15 @@
 import { BigNumber, Transaction, ethers } from "ethers";
-import UniswapUniversalRouterV3Abi from "../abi/UniswapUniversalRouterV3.json";
-import { uniswapUniversalRouterAddress, wETHAddress } from "../constants";
+import UniswapUniversalRouterV2Abi from "../abi/UniswapUniversalRouterV3.json";
+import { uniswapUniversalRouterAddress } from "../constants";
 import { decodeSwap } from "./utils";
 import DecodedTransactionProps from "../types/DecodedTransactionProps";
-import fs from "fs";
 
-const uniswapV3Interface = new ethers.utils.Interface(
-  UniswapUniversalRouterV3Abi
+// const uniswapV3Interface = new ethers.utils.Interface(
+//   UniswapUniversalRouterV3Abi
+// );
+
+const uniswapV2Interface = new ethers.utils.Interface(
+  UniswapUniversalRouterV2Abi
 );
 
 const decodeTransaction = async (
@@ -20,17 +23,14 @@ const decodeTransaction = async (
     return;
   }
 
-  // fs.appendFile("sandwich.txt", transaction.from + "\n", (err) => {
-  //   if (err) throw err;
-  //   console.log("Data updated successfully");
-  // });
-
   let decoded;
 
   try {
-    decoded = uniswapV3Interface.parseTransaction(transaction);
+    // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    decoded = uniswapV2Interface.parseTransaction(transaction);
     // console.log(decoded);
   } catch (e) {
+    console.log(e);
     return;
   }
 
@@ -39,14 +39,15 @@ const decodeTransaction = async (
   // console.log("HERE");
   // let swapPositionInCommands =
   //   decoded.args.commands.substring(2).indexOf("08") / 2;
-  let inputPosition = decoded.args.inputs[0];
+  console.log(decoded);
+
+  let inputPosition = decoded.args.inputs[1];
   decoded = await decodeSwap(inputPosition);
   if (!decoded) return;
   if (!decoded.hasTwoPath) return;
   // console.log(decoded);
   // if (decoded.recipient === 2) return;
   // if (decoded.path[0].toLowerCase() != wETHAddress.toLowerCase()) return;
-
   return {
     transaction,
     // amountIn: transaction.value,
@@ -54,7 +55,6 @@ const decodeTransaction = async (
     minAmountOut: decoded.minAmountOut,
     path: decoded.path,
     targetToken: decoded.path[1],
-    fee: decoded.fee as BigNumber,
   };
 };
 

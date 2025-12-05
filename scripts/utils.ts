@@ -1,9 +1,9 @@
 import { BigNumber, ethers } from "ethers";
-import uniswapFactoryByteCode from "../bytecode/uniswapV2FactoryByteCode";
+import uniswapPairByteCode from "../bytecode/uniswapPairByteCode";
 import erc20ByteCode from "../bytecode/erc20ByteCode";
-import UniswapV2FactoryAbi from "../abi/UniswapV2Factory.json";
+import UniswapV2PairAbi from "../abi/UniswapV2Pair.json";
 import UniswapV2RouterAbi from "../abi/UniswapV2Router.json";
-import UniswapV3Pool from "../abi/UniswapV3Pool.json";
+import UniswapV2FactoryAbi from "../abi/UniswapV2Factory.json";
 import Erc20Abi from "../abi/ERC20.json";
 import {
   gasBribe,
@@ -11,6 +11,7 @@ import {
   httpProviderUrl,
   privateKey,
   uniswapV2RouterAddress,
+  wETHAddress,
   uniswapV2FactoryAddress,
 } from "../constants";
 import DecodedTransactionProps from "../types/DecodedTransactionProps";
@@ -23,10 +24,9 @@ const signer = new ethers.Wallet(privateKey!, provider);
 const uniswapV2Router = new ethers.Contract(
   uniswapV2RouterAddress,
   UniswapV2RouterAbi
-  // signer
 );
 
-const uniswapV3Factory = new ethers.Contract(
+const UniswapV2Factory = new ethers.Contract(
   uniswapV2FactoryAddress,
   UniswapV2FactoryAbi,
   signer
@@ -38,41 +38,19 @@ const erc20Factory = new ethers.ContractFactory(
   signer
 );
 
-const getPair = async (token1: string, token2: string, fee: number) => {
-  const pairFactory = new ethers.ContractFactory(
-    UniswapV2FactoryAbi,
-    uniswapFactoryByteCode,
+const getPair = async (token: string) => {
+  const pairAddress = await UniswapV2Factory.getPair(wETHAddress, token);
+  console.log(pairAddress);
+  const pairFactory = new ethers.Contract(
+    pairAddress,
+    UniswapV2PairAbi,
     signer
   );
-  console.log(fee, uniswapV2FactoryAddress, token1, token2);
-
-  const pairAddress = await uniswapV3Factory.getPool(token1, token2, fee);
 
   try {
-    // console.log(pairAddress);
-    const uniswapV3Pool = new ethers.Contract(
-      pairAddress,
-      UniswapV3Pool,
-      provider
-    );
-
-    const liquidity = await uniswapV3Pool.liquidity();
-    const slot0 = await uniswapV3Pool.slot0();
-
-    const sqrtPriceX96 = slot0[0];
-
-    const amountToken0 = liquidity
-      .mul(sqrtPriceX96)
-      .div(ethers.BigNumber.from(2).pow(96));
-    const amountToken1 = liquidity
-      .mul(ethers.BigNumber.from(2).pow(96))
-      .div(sqrtPriceX96);
-
-    // console.log(amountToken0, amountToken1);
-
-    // const pair = pairFactory.attach(pairAddress);
-    // const reserves = await pair.getReserves();
-    return { token0: amountToken0, token1: amountToken1 };
+    const reserves = await pairFactory.getReserves();
+    console.log(reserves);
+    return { token0: reserves._reserve0, token1: reserves._reserve1 };
   } catch (e) {
     return;
   }
@@ -80,35 +58,28 @@ const getPair = async (token1: string, token2: string, fee: number) => {
 
 const decodeSwap = async (input: string) => {
   const abiCoder = new ethers.utils.AbiCoder();
+  console.log(input);
   const decodedParameters = abiCoder.decode(
     ["address", "uint256", "uint256", "bytes", "bool"],
     input
   );
-  // process.exit(1);
-  const sub = input.substring(2).match(/.{1,64}/g);
+  console.log(decodedParameters);
 
   let path: string[] = [];
-  let fee;
   let hasTwoPath = true;
-  if (!sub) return;
-  if (sub.length != 9) {
-    // const pathOne = "0x" + sub[sub.length - 2].substring(24);
-    // const pathTwo = "0x" + sub[sub.length - 1].substring(24);
-    const pathOne = "0x" + decodedParameters[3].substring(2, 42);
-    fee = ethers.BigNumber.from("0x" + decodedParameters[3].substring(42, 48));
-    const pathTwo = "0x" + decodedParameters[3].substring(48);
-    path = [pathOne, pathTwo];
-  } else {
-    hasTwoPath = false;
-  }
+
+  let addresses = decodedParameters[3].split("0x")[1];
+  const pathOne = "0x" + addresses.slice(0, 40);
+  const pathTwo = "0x" + addresses.slice(-40);
+  path = [pathOne, pathTwo];
 
   return {
-    recipient: parseInt(decodedParameters[0]),
+    //@ts-expect-error
+    recipient: parseInt(decodedParameters[(0, 16)]),
     amountIn: decodedParameters[1],
     minAmountOut: decodedParameters[2],
     path,
     hasTwoPath,
-    fee,
   };
 };
 

@@ -17,12 +17,12 @@ const wssProviderUrl = isMainnet
   : process.env.TESTNET_NODE_URL_WSS;
 
 const uniswapUniversalRouterAddress = isMainnet
-  ? "0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B"
-  : "0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD";
+  ? "0x66a9893cc07d91d95644aedd05d03f95e1dba8af"
+  : "0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b";
 
 const uniswapV2RouterAddress = isMainnet
-  ? "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45 "
-  : "0x89031Ff7240456b4997e367b48eDED3415606e0D";
+  ? "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+  : "0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3";
 
 const wETHAddress = isMainnet
   ? "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
@@ -30,7 +30,7 @@ const wETHAddress = isMainnet
 
 const uniswapV2FactoryAddress = isMainnet
   ? "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
-  : "0x0227628f3F023bb0B980b67D528571c95c6DaC1c";
+  : "0xF62c03E08ada871A0bEb309762E260a7a6a880E6";
 
 const gasBribe = process.env.GAS_BRIBE_IN_GWEI;
 const buyAmount = process.env.BUY_AMOUNT_IN_WEI;

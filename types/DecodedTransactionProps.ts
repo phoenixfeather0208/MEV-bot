@@ -6,7 +6,6 @@ type DecodedTransactionProps = {
   minAmountOut: BigNumber;
   path: string[];
   targetToken: string;
-  fee: BigNumber;
 };
 
 export default DecodedTransactionProps;
