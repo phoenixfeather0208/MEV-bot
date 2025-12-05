@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const isMainnet = process.argv[2] == "mainnet";
+const isMainnet = process.env.IS_MAINNET;
 
 const chainId = isMainnet ? 1 : 11155111;
 
