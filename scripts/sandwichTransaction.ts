@@ -1,4 +1,4 @@
-import { Transaction, ethers } from "ethers";
+import { BigNumber, Transaction, ethers } from "ethers";
 import {
   FlashbotsBundleProvider,
   FlashbotsBundleResolution,
@@ -66,7 +66,7 @@ const firstTransaction = async (
   const transaction = await uniswapV2Router
     .connect(signer)
     .swapExactETHForTokens(
-      amounts.firstAmountOut,
+      BigNumber.from(0),
       [wETHAddress, decoded.targetToken],
       signer.address,
       deadline,

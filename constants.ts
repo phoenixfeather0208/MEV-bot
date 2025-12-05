@@ -35,6 +35,8 @@ const uniswapV2FactoryAddress = isMainnet
 const gasBribe = process.env.GAS_BRIBE_IN_GWEI;
 const buyAmount = process.env.BUY_AMOUNT_IN_WEI;
 
+const tokenList = ["0x1c7d4b196cb0c7b01d743fbc6116a902379c7238"];
+
 export {
   isMainnet,
   chainId,
@@ -47,4 +49,5 @@ export {
   uniswapV2RouterAddress,
   gasBribe,
   buyAmount,
+  tokenList,
 };

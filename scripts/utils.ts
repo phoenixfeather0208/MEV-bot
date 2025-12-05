@@ -58,12 +58,10 @@ const getPair = async (token: string) => {
 
 const decodeSwap = async (input: string) => {
   const abiCoder = new ethers.utils.AbiCoder();
-  console.log(input);
   const decodedParameters = abiCoder.decode(
     ["address", "uint256", "uint256", "bytes", "bool"],
     input
   );
-  console.log(decodedParameters);
 
   let path: string[] = [];
   let hasTwoPath = true;
