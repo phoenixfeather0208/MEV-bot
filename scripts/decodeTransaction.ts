@@ -1,6 +1,7 @@
 import { BigNumber, Transaction, ethers } from "ethers";
 import UniswapUniversalRouterV2Abi from "../abi/UniswapUniversalRouterV3.json";
 import {
+  isMainnet,
   tokenList,
   uniswapUniversalRouterAddress,
   wETHAddress,
@@ -35,9 +36,11 @@ const decodeTransaction = async (
     console.log(e);
     return;
   }
-
   // Make sure it's a UniswapV2 swap
-  if (!decoded.args.commands.includes("0x0b000604")) return;
+  if (!isMainnet && !decoded.args.commands.includes("0x0b000604")) return;
+
+  if (isMainnet && !decoded.args.commands.includes("0x0b080604")) return;
+
   // console.log("HERE");
   // let swapPositionInCommands =
   //   decoded.args.commands.substring(2).indexOf("08") / 2;

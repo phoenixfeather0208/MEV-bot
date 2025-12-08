@@ -13,6 +13,7 @@ import {
   uniswapV2RouterAddress,
   wETHAddress,
   uniswapV2FactoryAddress,
+  isMainnet,
 } from "../constants";
 import DecodedTransactionProps from "../types/DecodedTransactionProps";
 import PairProps from "../types/PairProps";
@@ -66,10 +67,16 @@ const decodeSwap = async (input: string) => {
   let path: string[] = [];
   let hasTwoPath = true;
 
-  let addresses = decodedParameters[3].split("0x")[1];
-  const pathOne = "0x" + addresses.slice(0, 40);
-  const pathTwo = "0x" + addresses.slice(-40);
-  path = [pathOne, pathTwo];
+  if (!isMainnet) {
+    let addresses = decodedParameters[3].split("0x")[1];
+    const pathOne = "0x" + addresses.slice(0, 40);
+    const pathTwo = "0x" + addresses.slice(-40);
+    path = [pathOne, pathTwo];
+  } else {
+    const pathOne = "0x" + input.slice(-104, -64);
+    const pathTwo = "0x" + input.slice(-40);
+    path = [pathOne, pathTwo];
+  }
 
   return {
     //@ts-expect-error

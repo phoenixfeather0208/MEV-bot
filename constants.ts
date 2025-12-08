@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const isMainnet = process.env.IS_MAINNET;
+const isMainnet = process.env.IS_MAINNET ? true : false;
 
 const chainId = isMainnet ? 1 : 11155111;
 
@@ -17,7 +17,7 @@ const wssProviderUrl = isMainnet
   : process.env.TESTNET_NODE_URL_WSS;
 
 const uniswapUniversalRouterAddress = isMainnet
-  ? "0x66a9893cc07d91d95644aedd05d03f95e1dba8af"
+  ? "0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af"
   : "0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b";
 
 const uniswapV2RouterAddress = isMainnet
@@ -35,7 +35,9 @@ const uniswapV2FactoryAddress = isMainnet
 const gasBribe = process.env.GAS_BRIBE_IN_GWEI;
 const buyAmount = process.env.BUY_AMOUNT_IN_WEI;
 
-const tokenList = ["0x1c7d4b196cb0c7b01d743fbc6116a902379c7238"];
+const tokenList = isMainnet
+  ? ["0x391cf4b21f557c935c7f670218ef42c21bd8d686"]
+  : ["0x1c7d4b196cb0c7b01d743fbc6116a902379c7238"];
 
 export {
   isMainnet,
