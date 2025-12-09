@@ -50,13 +50,14 @@ if (!isAlchemyApi) {
     const subscriptionMessage = {
       jsonrpc: "2.0",
       method: "eth_subscribe",
-      params: [
-        "alchemy_pendingTransactions",
-        {
-          fromAddress: "0x8b21F52c1ECc59A30e635E77F7d436085061cC15",
-          hashesOnly: true,
-        },
-      ],
+      // params: [
+      //   "alchemy_pendingTransactions",
+      //   {
+      //     fromAddress: "0x8b21F52c1ECc59A30e635E77F7d436085061cC15",
+      //     hashesOnly: true,
+      //   },
+      // ],
+      params: ["newPendingTransactions"],
       id: 1,
     };
 
