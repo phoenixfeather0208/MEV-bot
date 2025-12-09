@@ -14,6 +14,7 @@ import {
   wETHAddress,
   uniswapV2FactoryAddress,
   isMainnet,
+  profitPercentage,
 } from "../constants";
 import DecodedTransactionProps from "../types/DecodedTransactionProps";
 import PairProps from "../types/PairProps";
@@ -100,12 +101,27 @@ const getAmountOut = (
   return amountOut;
 };
 
+const checkProfitable = (token1: BigNumber, amountIn: BigNumber) => {
+  if (token1.isZero()) return false;
+
+  const scale = BigNumber.from("10000");
+  const percentTimes100 = amountIn.mul(scale).div(token1);
+
+  const threshold = BigNumber.from(((profitPercentage * 100) / 2).toString());
+
+  return percentTimes100.gte(threshold);
+};
+
 const getAmounts = (
   decoded: DecodedTransactionProps,
   pairs: PairProps
 ): AmountsProps | undefined => {
   const { transaction, amountIn, minAmountOut } = decoded;
   const { token0, token1 } = pairs;
+
+  console.log(checkProfitable(token1, amountIn));
+
+  if (!checkProfitable(token1, amountIn)) return;
 
   const maxGasFee = transaction.maxFeePerGas
     ? transaction.maxFeePerGas.add(gasBribe ?? 0)
