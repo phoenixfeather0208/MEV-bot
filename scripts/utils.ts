@@ -131,34 +131,9 @@ const getAmounts = (
     ? transaction.maxPriorityFeePerGas.add(gasBribe ?? 0)
     : BigNumber.from(gasBribe);
 
-  let firstAmountOut = getAmountOut(BigNumber.from(buyAmount), token0, token1);
-  const updatedReserveA = token0.add(buyAmount!);
-  const updatedReserveB = token1.add(firstAmountOut.mul(997).div(1000));
-
-  let secondBuyAmount = getAmountOut(
-    amountIn,
-    updatedReserveA,
-    updatedReserveB
-  );
-
-  if (secondBuyAmount.lt(minAmountOut)) return;
-  const updatedReserveA2 = updatedReserveA.add(amountIn);
-  const updatedReserveB2 = updatedReserveB.add(
-    secondBuyAmount.mul(997).div(1000)
-  );
-
-  let thirdAmountOut = getAmountOut(
-    firstAmountOut,
-    updatedReserveB2,
-    updatedReserveA2
-  );
-
   return {
     maxGasFee,
     priorityFee,
-    firstAmountOut,
-    secondBuyAmount,
-    thirdAmountOut,
   };
 };
 

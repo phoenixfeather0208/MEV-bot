@@ -41,11 +41,6 @@ const sandwichTransaction = async (
   // 2. Wrap target transacton
   const t2 = secondTransaction(decoded.transaction);
 
-  // // 3. Approve UniswapV2Router to spend token
-  // const t3 = await thirdTransaction(decoded, amounts);
-
-  // // 4. Swap tokens for ETH
-  // const t4 = await forthTransaction(decoded, amounts);
   console.log("!!!!!!!!!!!!!!!!!!!!!!");
   // Sign sandwich transaction
   const bundle = await signBundle([t1, t2], flashbotsProvider);
@@ -121,60 +116,6 @@ const secondTransaction = (transaction: Transaction) => {
   console.log("second");
 
   return signedMiddleTransaction;
-};
-
-const thirdTransaction = async (
-  decoded: DecodedTransactionProps,
-  amounts: AmountsProps
-) => {
-  const erc20 = erc20Factory.attach(decoded.targetToken);
-  let thirdTransaction = {
-    signer: signer,
-    transaction: await erc20.populateTransaction.approve(
-      uniswapV2Router,
-      amounts.firstAmountOut,
-      {
-        value: "0",
-        type: 2,
-        maxFeePerGas: amounts.maxGasFee,
-        maxPriorityFeePerGas: amounts.priorityFee,
-        gasLimit: 300000,
-      }
-    ),
-  };
-  thirdTransaction.transaction = {
-    ...thirdTransaction.transaction,
-    chainId,
-  };
-  return thirdTransaction;
-};
-
-const forthTransaction = async (
-  decoded: DecodedTransactionProps,
-  amounts: AmountsProps
-) => {
-  let fourthTransaction = {
-    signer: signer,
-    transaction: await uniswapV2Router.swapExactTokensForETH(
-      amounts.firstAmountOut,
-      amounts.thirdAmountOut,
-      [decoded.targetToken, wETHAddress],
-      signer.address,
-      deadline,
-      {
-        value: "0",
-        type: 2,
-        maxFeePerGas: amounts.maxGasFee,
-        maxPriorityFeePerGas: amounts.priorityFee,
-        gasLimit: 300000,
-      }
-    ),
-  };
-  fourthTransaction.transaction = {
-    ...fourthTransaction.transaction,
-    chainId,
-  };
-  return fourthTransaction;
 };
 
 const signBundle = async (
