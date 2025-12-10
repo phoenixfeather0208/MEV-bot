@@ -43,7 +43,7 @@ const erc20Factory = new ethers.ContractFactory(
 
 const getPair = async (token: string) => {
   const pairAddress = await UniswapV2Factory.getPair(wETHAddress, token);
-  console.log(pairAddress);
+  // console.log(pairAddress);
   const pairFactory = new ethers.Contract(
     pairAddress,
     UniswapV2PairAbi,
@@ -52,7 +52,7 @@ const getPair = async (token: string) => {
 
   try {
     const reserves = await pairFactory.getReserves();
-    console.log(reserves);
+    // console.log(reserves);
     return { token0: reserves._reserve0, token1: reserves._reserve1 };
   } catch (e) {
     return;

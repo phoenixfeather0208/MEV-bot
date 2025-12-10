@@ -25,7 +25,6 @@ const sandwichTransaction = async (
 ): Promise<boolean> => {
   if (!decoded) return false;
   const pairs = await getPair(decoded.targetToken);
-  console.log(pairs);
   console.log("?!!!!!!!!!", decoded.transaction.hash);
   if (!pairs) return false;
   const amounts = getAmounts(decoded, pairs);
@@ -39,12 +38,9 @@ const sandwichTransaction = async (
   // 1. Swap ETH for tokens
   const t1 = await firstTransaction(decoded, amounts);
 
-  console.log("t1", t1);
-
   // 2. Wrap target transacton
   const t2 = secondTransaction(decoded.transaction);
 
-  console.log("!!!!!!!!!!!!!!!!!!!!!!");
   // Sign sandwich transaction
   const bundle = await signBundle([t1, t2], flashbotsProvider);
 
@@ -79,7 +75,7 @@ const firstTransaction = async (
   decoded: DecodedTransactionProps,
   amounts: AmountsProps
 ) => {
-  console.log(amounts);
+  // console.log(amounts);
   const transaction = await uniswapV2Router
     .connect(signer)
     .swapExactETHForTokens(
@@ -105,7 +101,7 @@ const firstTransaction = async (
     ...firstTransaction.transaction,
     chainId,
   };
-  console.log("first");
+  // console.log("first");
   return firstTransaction;
 };
 
@@ -135,7 +131,7 @@ const secondTransaction = (transaction: Transaction) => {
     console.log("Error signedMiddleTransaction: ", error);
     return;
   }
-  console.log("second");
+  // console.log("second");
 
   return signedMiddleTransaction;
 };
@@ -146,7 +142,7 @@ const signBundle = async (
 ) => {
   const transactionsArray = [...transactions];
   const signedBundle = await flashbotsProvider.signBundle(transactionsArray);
-  console.log(signedBundle);
+  // console.log(signedBundle);
   return signedBundle;
 };
 
@@ -172,7 +168,7 @@ const sendBundle = async (
     .sendRawBundle(bundle, blockNumber + 1)
     .then((_bundleSubmission: any) => {
       bundleSubmission = _bundleSubmission;
-      console.log("Bundle submitted", bundleSubmission.bundleHash);
+      // console.log("Bundle submitted", bundleSubmission.bundleHash);
       return bundleSubmission.wait();
     })
     .then(async (waitResponse: any) => {

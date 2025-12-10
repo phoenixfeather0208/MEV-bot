@@ -55,7 +55,7 @@ const decodeTransaction = async (
   // console.log(decoded.path[1]);
   // if (!tokenList.includes(decoded.path[1])) return;
 
-  console.log(decoded);
+  // console.log(decoded);
 
   return {
     transaction,
