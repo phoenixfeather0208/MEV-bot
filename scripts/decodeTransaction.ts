@@ -53,7 +53,7 @@ const decodeTransaction = async (
   // if (decoded.recipient === 2) return;
   if (decoded.path[0].toLowerCase() != wETHAddress.toLowerCase()) return;
   // console.log(decoded.path[1]);
-  if (!tokenList.includes(decoded.path[1])) return;
+  // if (!tokenList.includes(decoded.path[1])) return;
 
   console.log(decoded);
 
