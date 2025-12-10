@@ -177,8 +177,12 @@ const sendBundle = async (
     })
     .then(async (waitResponse: any) => {
       console.log("Wait response", FlashbotsBundleResolution[waitResponse]);
-      if (waitResponse == FlashbotsBundleResolution.BundleIncluded) {
-        console.log("Bundle Included!");
+      if (
+        waitResponse == FlashbotsBundleResolution.BundleIncluded ||
+        waitResponse == FlashbotsBundleResolution.BlockPassedWithoutInclusion
+      ) {
+        if (waitResponse == FlashbotsBundleResolution.BundleIncluded)
+          console.log("Bundle Included!");
         try {
           approve(tokenContractAddress).then((balance: number) => {
             console.log("Token Approved!");
