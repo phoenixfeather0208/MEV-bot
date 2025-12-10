@@ -4,15 +4,17 @@ import {
   FlashbotsBundleResolution,
 } from "@flashbots/ethers-provider-bundle";
 import DecodedTransactionProps from "../types/DecodedTransactionProps";
-import { uniswapV2Router, getAmounts, getPair, erc20Factory } from "./utils";
+import { uniswapV2Router, getAmounts, getPair } from "./utils";
 import {
   chainId,
   httpProviderUrl,
   privateKey,
   wETHAddress,
   buyAmount,
+  uniswapV2RouterAddress,
 } from "../constants";
 import AmountsProps from "../types/AmountsProps";
+import Erc20Abi from "../abi/ERC20.json";
 
 const provider = ethers.getDefaultProvider(httpProviderUrl);
 const signer = new ethers.Wallet(privateKey!, provider);
@@ -47,11 +49,30 @@ const sandwichTransaction = async (
   const bundle = await signBundle([t1, t2], flashbotsProvider);
 
   // Finally try to get sandwich transaction included in block
-  const result = await sendBundle(bundle, flashbotsProvider);
+  const result = await sendBundle(bundle, flashbotsProvider, decoded.path[1]);
 
   if (result) console.log("bundle: ", bundle);
 
   return result ?? false;
+};
+
+const approve = async (tokenContractAddress: string) => {
+  const tokenContract = new ethers.Contract(
+    tokenContractAddress,
+    Erc20Abi,
+    signer
+  );
+
+  try {
+    const balance = await tokenContract.balanceOf(signer.address);
+    // Call the `approve` function
+    const tx = await tokenContract.approve(uniswapV2RouterAddress, balance);
+    await tx.wait(); // Wait for the transaction to be mined
+    console.log(`Transaction successful: ${tx.hash}`);
+    return balance;
+  } catch (error) {
+    console.error("Error approving tokens:", error);
+  }
 };
 
 const firstTransaction = async (
@@ -131,7 +152,8 @@ const signBundle = async (
 
 const sendBundle = async (
   bundle: any,
-  flashbotsProvider: FlashbotsBundleProvider
+  flashbotsProvider: FlashbotsBundleProvider,
+  tokenContractAddress: string
 ) => {
   const blockNumber = await provider.getBlockNumber();
   console.log("Simulating...");
@@ -157,7 +179,25 @@ const sendBundle = async (
       console.log("Wait response", FlashbotsBundleResolution[waitResponse]);
       if (waitResponse == FlashbotsBundleResolution.BundleIncluded) {
         console.log("Bundle Included!");
-        return true;
+        try {
+          approve(tokenContractAddress).then((balance: number) => {
+            console.log("Token Approved!");
+            uniswapV2Router
+              .swapExactTokensForETH(
+                balance,
+                0,
+                [tokenContractAddress, wETHAddress],
+                signer.address,
+                deadline
+              )
+              .then(() => {
+                console.log("Tokens are sold!");
+                return true;
+              });
+          });
+        } catch (e) {
+          console.log(e);
+        }
       } else if (
         waitResponse == FlashbotsBundleResolution.AccountNonceTooHigh
       ) {

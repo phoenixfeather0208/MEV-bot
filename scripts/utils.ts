@@ -25,7 +25,8 @@ const signer = new ethers.Wallet(privateKey!, provider);
 
 const uniswapV2Router = new ethers.Contract(
   uniswapV2RouterAddress,
-  UniswapV2RouterAbi
+  UniswapV2RouterAbi,
+  signer
 );
 
 const UniswapV2Factory = new ethers.Contract(
