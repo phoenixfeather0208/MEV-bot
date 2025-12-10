@@ -24,6 +24,7 @@ const sandwichTransaction = async (
   if (!decoded) return false;
   const pairs = await getPair(decoded.targetToken);
   console.log(pairs);
+  console.log("?!!!!!!!!!", decoded.transaction.hash);
   if (!pairs) return false;
   const amounts = getAmounts(decoded, pairs);
   if (!amounts) return false;
