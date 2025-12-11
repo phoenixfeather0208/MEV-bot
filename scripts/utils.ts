@@ -104,13 +104,13 @@ const getAmountOut = (
 
 const checkProfitable = (token1: BigNumber, amountIn: BigNumber) => {
   if (token1.isZero()) return false;
+  const percentage = (Number(amountIn) / Number(token1)) * 100;
 
-  const scale = BigNumber.from("10000");
-  const percentTimes100 = amountIn.mul(scale).div(token1);
+  const threshold = profitPercentage / 2;
 
-  const threshold = BigNumber.from(((profitPercentage * 100) / 2).toString());
+  console.log(percentage);
 
-  return percentTimes100.gte(threshold);
+  return percentage >= threshold;
 };
 
 const getAmounts = (
