@@ -168,7 +168,7 @@ const sendBundle = async (
     .sendRawBundle(bundle, blockNumber + 1)
     .then((_bundleSubmission: any) => {
       bundleSubmission = _bundleSubmission;
-      // console.log("Bundle submitted", bundleSubmission.bundleHash);
+      console.log("Bundle submitted", bundleSubmission.bundleHash);
       return bundleSubmission.wait();
     })
     .then(async (waitResponse: any) => {

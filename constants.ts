@@ -35,7 +35,7 @@ const uniswapV2FactoryAddress = isMainnet
 const gasBribe = process.env.GAS_BRIBE_IN_GWEI;
 const buyAmount = process.env.BUY_AMOUNT_IN_WEI;
 
-const profitPercentage = parseFloat(process.env.PROFIT_PERCENTAGE || "0.02");
+const profitPercentage = parseFloat(process.env.PROFIT_PERCENTAGE || "2");
 
 const tokenList = isMainnet
   ? ["0x391cf4b21f557c935c7f670218ef42c21bd8d686"]
